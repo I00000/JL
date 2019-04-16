@@ -39,6 +39,38 @@ Resources:
           Properties:
             Path: /
             Method: get
+  PurchaseRequisitionAggregateStore:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      AttributeDefinitions:
+      - AttributeName: "requisitionId"
+        AttributeType: "S"
+      - AttributeName: "requestor"
+        AttributeType: "S"
+      - AttributeName: "status"
+        AttributeType: "S"
+      KeySchema:
+      - AttributeName: "requisitionId"
+        KeyType: "HASH"
+      BillingMode: PAY_PER_REQUEST
+      GlobalSecondaryIndexes:
+      - IndexName: IndexByRequestorAndStatus
+        KeySchema:
+        - AttributeName: requestor
+          KeyType: HASH
+        - AttributeName: status
+          KeyType: RANGE
+        Projection:
+          NonKeyAttributes:
+            - description
+            - timestamp
+            - items
+            - total
+          ProjectionType: INCLUDE
+      SSESpecification:
+        SSEEnabled: True
+      StreamSpecification:
+        StreamViewType: NEW_IMAGE
   LambdaExecutionRole:
     Description: Creating service role in IAM for AWS Lambda
     Type: AWS::IAM::Role
